@@ -1,0 +1,19 @@
+{
+  "name": "jogomemoria",
+  "version": "0.0.0",
+  "authors": [
+    "abraaoisvi <abraao.isvi@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "EaselJS": "~0.8.0",
+    "PreloadJS": "~0.6.0"
+  }
+}
