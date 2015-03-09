@@ -1,29 +1,46 @@
 var stage;
 
-var first;
-var second;
 var loader;
+
+var contador = 0;
+var selected = {name:null, frame:null};
+
+var items = {};
+
+var grid_game = [
+        ["noah","david_and_goliath","babel"],
+        ["david_and_goliath","noah","angel"],
+        ["adamandeve","noah","adamandeve"],
+        ["angel","babel","noah"]
+      ];
 
 function load() {
 
-  manifest = [
-    {src: "fundo.png", id: "fundo"},
-    {src: "angel.jpg", id: "angel"},
-    {src: "david_and_goliath.jpg", id: "david_and_goliath"},
-    {src: "babel.jpg", id: "babel"},
-    {src: "adamandeve.jpg", id: "adamandeve"},
-    {src: "noah.jpg", id: "noah"}
+  var manifest = [
+    {src: "fundo.png", id: "fundo"},//
+    {src: "angel.jpg", id: "angel"},//0
+    {src: "david_and_goliath.jpg", id: "david_and_goliath"},//1
+    {src: "babel.jpg", id: "babel"},//2
+    {src: "adamandeve.jpg", id: "adamandeve"},//3
+    {src: "noah.jpg", id: "noah"}//4
   ];
 
   loader = new createjs.LoadQueue(false);
   loader.addEventListener("complete", handleComplete);
-  loader.loadManifest(manifest, true, "/");
+  loader.addEventListener("fileload", fileload);
+  loader.loadManifest(manifest, true);
 
   loader = new createjs.LoadQueue(false);
 }
 
-function handleComplete() {
+function fileload(event) {
+  //console.log(event);
+  items[event.item.id] = event.result;
+}
 
+function handleComplete(event) {
+  init();
+  //console.log(loader.getResult("fundo"));
 }
 
 function init() {
@@ -33,36 +50,95 @@ function init() {
     createjs.Touch.enable(stage);
   	stage.enableMouseOver(10);
 
-    createFrame("angel.jpg", "angel");
+    //createFrame("angel.jpg", "angel");
+
+    var container = new createjs.Container();
+    stage.addChild(container);
+
+    var x = 0;
+    var y = 0;
+
+    for(var lin =0; lin<grid_game.length; lin++) {
+      for(var col =0; col<grid_game[lin].length; col++) {
+        x = lin * 85;
+        y = col * 85;
+
+        frm = createFrame(container, grid_game[lin][col]);
+        frm.x = x;
+        frm.y = y;
+      }
+    }
+
+
 
     createjs.Ticker.addEventListener("tick", tick);
 }
 
-function select(name) {
+function select(name, frame) {
 
-  if(!first) {
-    first=name;
+  if(frame.opened) {
+    console.log(frame);
+    return;
+  }
+
+  if(!selected.name) {
+    selected.name  = name;
+    selected.frame = frame;
+
+    frame.gotoAndPlay("front");
+    frame.opened = true;
   } else {
+    if(selected.name != name) {
+      selected.frame.gotoAndPlay("back");
+      frame.gotoAndPlay("back");
 
+      selected.frame.opened = false;
+      selected.name  = null;
+      selected.frame = null;
+      frame.opened = false;
+
+    } else {
+      frame.opened = true;
+      frame.gotoAndPlay("front");
+
+      selected.name  = null;
+      selected.frame = null;
+      contador++;
+    }
   }
 
 }
 
-function createFrame() {
+function createFrame(container, imageid) {
   var spriteSheet = new createjs.SpriteSheet({
 												   framerate: 30,
-												   "images": [loader.getResult("fundo"), loader.getResult("angel")],
-												   "frames": {["weight": 64, "height": 64, "count": 64, "imageIndex": 0]},
-												   // define two animations, run (loops, 1.5x speed) and jump (returns to run):
+												   "images": [items["fundo"], items[imageid]],
+												   "frames": [[0, 0, 84, 84, 0],[0, 0, 84, 84, 1]],
 												   "animations": {
-													   "back": [0, 25, "run", 1.5],
-													   "front": [26, 63, "run"]
+													   "back": 0,
+													   "front": 1
 												   }
 											   });
-	grant = new createjs.Sprite(spriteSheet, "run");
+
+	frame = new createjs.Sprite(spriteSheet, "back");
+
+  container.addChild(frame);
+
+  frame.on("mousedown", function (evt) {
+    select(imageid, this);
+
+    if(contador >= 6) {
+      setTimeout(function() {
+        alert("Você Ganhou!");
+      }, 100);      
+    }
+
+  });
+
+  return frame;
 }
 
-function createFrameOLD(imageName, name) {
+/*function createFrameOLD(imageName, name) {
   var image = new Image();
   image.src = imageName;
 
@@ -80,7 +156,7 @@ function createFrameOLD(imageName, name) {
     bitmap.scaleX = bitmap.scaleY = bitmap.scale = 0.2;
     bitmap.cursor = "pointer";
   }
-}
+}*/
 
 function tick(event) {
     // this set makes it so the stage only re-renders when an event handler indicates a change has happened.
