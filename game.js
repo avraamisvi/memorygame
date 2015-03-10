@@ -7,12 +7,54 @@ var selected = {name:null, frame:null};
 
 var items = {};
 
-var grid_game = [
+/*var grid_game = [
         ["noah","david_and_goliath","babel"],
         ["david_and_goliath","noah","angel"],
         ["adamandeve","noah","adamandeve"],
         ["angel","babel","noah"]
-      ];
+      ];*/
+
+var grid_game = [];
+
+function generateGrid() {
+  var pos = Math.floor((Math.random() * 6));
+
+  var imgs = [{name:"noah", times:0},{name:"david_and_goliath", times:0},
+  {name:"babel", times:0},{name:"angel", times:0},{name:"adamandeve", times:0},{name:"babel", times:0}]
+  var arrtemp = [];
+  var im;
+  var ix = 0;
+
+  while(ix < 12) {
+    pos = Math.floor((Math.random() * 6));
+    im = imgs[pos];
+
+    if(im.times >= 2){
+      continue;
+    }
+
+    im.times++;
+    arrtemp[ix] = im.name;
+    ix++;
+  }
+
+  console.log("grid");
+  var x = 0;
+  var y = 0;
+  var ip = 0;
+  for(x = 0; x < 4; x++) {
+    for(y = 0; y < 3; y++) {
+
+      if(!grid_game[x])
+        grid_game[x] = [];
+
+        grid_game[x][y] = arrtemp[ip];
+      ip++;
+    }
+  }
+
+  console.log("exited");
+}
 
 function load() {
 
@@ -44,6 +86,8 @@ function handleComplete(event) {
 }
 
 function init() {
+
+    generateGrid();
 
     stage = new createjs.Stage("demoCanvas");
 
@@ -130,7 +174,7 @@ function createFrame(container, imageid) {
     if(contador >= 6) {
       setTimeout(function() {
         alert("Você Ganhou!");
-      }, 100);      
+      }, 100);
     }
 
   });
