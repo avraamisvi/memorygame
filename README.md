@@ -5,7 +5,7 @@
 
     git clone https://github.com/avraamisvi/memorygame.git
     install nodejs (linux apt-get install nodejs)
-    install npm (linux apt-get install nodejs)
+    install npm (linux apt-get install npm)
     npm install bower -g (needs sudo if in linux)
     install python (if you wish to use its SimpleHTTPServer)
 
